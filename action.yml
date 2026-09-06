@@ -1,9 +1,7 @@
 name: "Validate backtest with Canli receipts"
 description: >-
-  Sends a backtest's return series to canlicapital.com's free deflated-Sharpe validator, writes
-  the verdict, every boundary sentence, the receipt URL and the badge markdown to the job summary,
-  and exposes them as outputs. Never issues an API key by default (the API allows 5 keys per
-  client per UTC day) and never fails the job over the verdict unless you opt in with fail-on.
+  Validates a backtest's return series through canlicapital.com's free API and writes the
+  receipt to the job summary.
 author: "Canli Capital"
 
 branding:
