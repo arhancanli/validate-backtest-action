@@ -67,7 +67,7 @@ jobs:
 
       - name: Validate backtest with Canli receipts
         id: canli
-        uses: ./action
+        uses: arhancanli/validate-backtest-action@v0
         with:
           returns-file: returns.json
           periods-per-year: "252"
@@ -80,7 +80,7 @@ jobs:
           echo "Receipt: ${{ steps.canli.outputs.receipt-url }}"
 ```
 
-If this action lives in another repository, replace `uses: ./action` with
+If this action lives in another repository, replace `uses: arhancanli/validate-backtest-action@v0` with
 `uses: <owner>/<repo>/action@<ref>`.
 
 ### `returns-file` format
@@ -123,7 +123,7 @@ key, an exhausted quota, a malformed returns file). If you want CI to fail when 
 clear a bar you have chosen:
 
 ```yaml
-      - uses: ./action
+      - uses: arhancanli/validate-backtest-action@v0
         with:
           returns-file: returns.json
           periods-per-year: "252"
