@@ -1,0 +1,8 @@
+# The repo root .gitignore excludes any path named "dist" so the website build's own
+# dist/ output never lands in git. This action is different: the GitHub Actions
+# Marketplace requires a JavaScript action's compiled dist/ to be committed, since a
+# consumer's workflow runs it with no install step. Un-ignore it here, scoped to this
+# directory only.
+node_modules/
+!dist/
+!dist/**

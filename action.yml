@@ -1,0 +1,90 @@
+name: "Validate backtest with Canli receipts"
+description: >-
+  Sends a backtest's return series to canlicapital.com's free deflated-Sharpe validator, writes
+  the verdict, every boundary sentence, the receipt URL and the badge markdown to the job summary,
+  and exposes them as outputs. Never issues an API key by default (the API allows 5 keys per
+  client per UTC day) and never fails the job over the verdict unless you opt in with fail-on.
+author: "Canli Capital"
+
+branding:
+  icon: "check-circle"
+  color: "blue"
+
+inputs:
+  returns-file:
+    description: >-
+      Path to a CSV or JSON file of period returns, relative to the workspace. CSV: one number
+      per line, or a single leading numeric column (extra columns are ignored). JSON: an array
+      of numbers. The format is chosen by file extension (".json" is read as JSON; anything else
+      as CSV).
+    required: true
+  periods-per-year:
+    description: 'Periods per year for annualization, e.g. 252 for daily returns, 12 for monthly.'
+    required: true
+  effective-independent-trials:
+    description: >-
+      The effective number of independent trials behind this return series (the declared
+      search), sent as effective_independent_trials.
+    required: true
+  cross-trial-sharpe-sd-annualized:
+    description: >-
+      Annualized standard deviation of Sharpe ratios across trials. Defaults to 0.5, the value
+      public/api/v1/openapi.json's own example for this mode uses, since a single equity curve
+      has no per-strategy analogue for this input.
+    required: false
+    default: "0.5"
+  api-key:
+    description: >-
+      A Canli Capital API key (ck_live_...). Prefer a repository secret: store it as CANLI_KEY
+      and pass `api-key: ${{ secrets.CANLI_KEY }}`. Leave unset together with issue-key: false
+      (the default) and the action fails with instructions instead of guessing.
+    required: false
+    default: ""
+  issue-key:
+    description: >-
+      When true, and api-key is not set, issue a new key via POST /api/v1/keys for this run.
+      Off by default: the API allows only 5 keys per client per UTC day, so issuing one per CI
+      run exhausts that quota within a handful of pushes. A stored CANLI_KEY secret is the
+      supported path; only opt into this for a one-off or a very low-frequency workflow.
+    required: false
+    default: "false"
+  label:
+    description: >-
+      Attribution label sent with key issuance and validation requests, for the API's source
+      breakdown by label. Matches the convention integrations/canli_validate/__init__.py and the
+      stdio MCP server use for their own default labels.
+    required: false
+    default: "github-action"
+  api-base:
+    description: 'Base URL of the Canli Capital API.'
+    required: false
+    default: "https://canlicapital.com"
+  fail-on:
+    description: >-
+      Optional job-failure policy. Left unset (the default), this action never fails the job
+      over the verdict, only over an API or input error. Set to "dsr-below" together with
+      fail-on-threshold to fail the job when the deflated Sharpe ratio is below that threshold.
+      This is a policy YOU are choosing for this workflow; it is stated as such in the job
+      summary and is never presented as a verdict the API itself issued.
+    required: false
+    default: ""
+  fail-on-threshold:
+    description: 'Threshold used when fail-on is "dsr-below". A number between 0 and 1.'
+    required: false
+    default: ""
+
+outputs:
+  dsr:
+    description: 'The deflated Sharpe ratio, data.result.deflated_sharpe_ratio, a probability in [0, 1].'
+  psr:
+    description: 'The probabilistic Sharpe ratio against zero, data.result.psr_against_zero, a probability in [0, 1].'
+  receipt-id:
+    description: 'The 24-hex-character content-hash id of the stored receipt.'
+  receipt-url:
+    description: 'The URL of the stored receipt, GET /api/v1/receipts/{id}.'
+  badge-markdown:
+    description: 'Markdown embed for the receipt badge (embed_markdown), ready to paste into a README.'
+
+runs:
+  using: "node20"
+  main: "dist/index.mjs"
