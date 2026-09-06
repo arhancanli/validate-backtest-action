@@ -1,0 +1,22 @@
+{
+  "name": "canli-validate-backtest-action",
+  "version": "1.0.0",
+  "description": "GitHub Action: validate a backtest's return series against canlicapital.com's free deflated-Sharpe validator and publish the receipt to the job summary.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "ncc build src/main.mjs -o dist"
+  },
+  "dependencies": {
+    "@actions/core": "3.0.1",
+    "@actions/github": "9.1.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "0.45.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
